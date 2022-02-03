@@ -3,25 +3,31 @@ import { TaskListContext } from '../context/TaskListContext';
 
 export const TaskForm = () => {
 
-    const {addTask, clearList, editItem, editTask}=useContext(TaskListContext)
-    const [title, setTitle]=useState('')
-    const handleSubmit=(e)=> {e.preventDefault();
-        if (editItem===null) {
-            addTask(title);
-            setTitle(' ');
-        } else {
-            editTask(title, editTask)
-        }
-  }
-  
-  const handleChange=(e)=> {setTitle(e.target.value)}
-  useEffect(()=> {
-    if(editItem!==null) {
-        setTitle(editItem.title)
+    const { addTask, clearList, editTask, editItem } = useContext(TaskListContext)
+  const [title, setTitle] = useState('')
+
+  const handleSubmit = e => {
+    e.preventDefault()
+    if (!editItem) {
+      addTask(title)
+      setTitle('')
     } else {
-        setTitle(" ")
-    };
-    }, [editItem])
+      editTask(title, editItem.id)
+    }
+  }
+
+  const handleChange = e => {
+    setTitle(e.target.value)
+  }
+
+  useEffect(() => {
+    if (editItem) {
+      setTitle(editItem.title)
+      console.log(editItem)
+    } else {
+      setTitle('')
+    }
+  }, [editItem])
   return <form className='form' onSubmit={handleSubmit}>
       <input onChange={handleChange}
        type='text' 

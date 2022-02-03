@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import { TaskListContext } from '../context/TaskListContext';
 
 export const Task = ({task}) => {
-    const {deleteTask, findItem}= useContext(TaskListContext);
+    const {deleteTask, findItem}= useContext(TaskListContext)
  return <li className='list-item'>
       <span>{task.title}</span>
       <div>
