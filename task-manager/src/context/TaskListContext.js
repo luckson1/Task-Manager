@@ -1,41 +1,66 @@
-import { createContext, useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import React, { createContext, useState, useEffect } from 'react'
+import { v4 as uuid } from 'uuid';
 
-export const TaskListContext=createContext();
+export const TaskListContext = createContext()
 
-const TaskListContextProvider =(props) => {
-    
-    const [tasks, setTasks]=useState(
-        [
-            {title: 'read the book', id:1},
-            {title: 'Wash Utensils', id:2},
-            {title: 'write some code', id:3}
-        ]
-    );
-    const [editItem, setItem]=useState(null);
-    const findItem=id=> {
-        const item=tasks.find(task=>tasks.id===id)
-        setItem(item)
+const TaskListContextProvider = props => {
+  const initialState = JSON.parse(localStorage.getItem('tasks')) || []
 
-    }
-    const editTask= (title, id) => {
-        const newTasks=tasks.map(task=> (task.id===id? {title, id} : task));
-        setTasks(newTasks)
-    }
+  const [tasks, setTasks] = useState(initialState)
 
-    const addTask =(title) => {
-        setTasks([...tasks, {title, id: uuidv4() } ])
-    }
-    const deleteTask =(id) => {
-        setTasks(tasks.filter(task=>task.id!==id))
-    }
-    const clearList= ()=> {
-        setTasks([])
-    }
-    return <TaskListContext.Provider value={{tasks, addTask, deleteTask, clearList,findItem, editItem, editTask}}>
-        {props.children}
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks))
+  }, [tasks])
+
+  const [editItem, setEditItem] = useState(null)
+
+  // Add tasks
+  const addTask = title => {
+    setTasks([...tasks, { title, id: uuid() }])
+  }
+
+  // Remove tasks
+  const deleteTask = id => {
+    setTasks(tasks.filter(task => task.id !== id))
+  }
+
+  // Clear tasks
+  const clearList = () => {
+    setTasks([])
+  }
+
+  // Find task
+  const findItem = id => {
+    const item = tasks.find(task => task.id === id)
+
+    setEditItem(item)
+  }
+
+  // Edit task
+  const editTask = (title, id) => {
+    const newTasks = tasks.map(task => (task.id === id ? { title, id } : task))
+
+    console.log(newTasks)
+
+    setTasks(newTasks)
+    setEditItem(null)
+  }
+
+  return (
+    <TaskListContext.Provider
+      value={{
+        tasks,
+        addTask,
+        deleteTask,
+        clearList,
+        findItem,
+        editTask,
+        editItem
+      }}
+    >
+      {props.children}
     </TaskListContext.Provider>
-
+  )
 }
 
-export default TaskListContextProvider;
+export default TaskListContextProvider
